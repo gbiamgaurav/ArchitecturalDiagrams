@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Assistant Data Flow</title>
+<style>
+  :root {
+    --bg: #f6f7fb;
+    --panel: #ffffff;
+    --ink: #1b1f2a;
+    --muted: #5f6677;
+    --line: #d9dde7;
+    --req: #2563eb;
+    --res: #15803d;
+    --boundary: #94a3b8;
+    --n-ext-fill: #f1f5f9;   --n-ext-stroke: #64748b;
+    --n-app-fill: #e8f0ff;   --n-app-stroke: #2563eb;
+    --n-llm-fill: #f3ecff;   --n-llm-stroke: #7c3aed;
+    --n-db-fill:  #fff5e6;   --n-db-stroke:  #d97706;
+    --glow: rgba(37, 99, 235, .35);
+    --badge-ink: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1218; --panel: #171b24; --ink: #e7e9ef; --muted: #9aa3b5; --line: #2a3140;
+      --req: #60a5fa; --res: #4ade80; --boundary: #64748b;
+      --n-ext-fill: #1e2430; --n-ext-stroke: #94a3b8;
+      --n-app-fill: #142240; --n-app-stroke: #60a5fa;
+      --n-llm-fill: #231a3d; --n-llm-stroke: #a78bfa;
+      --n-db-fill:  #2d2210; --n-db-stroke:  #f59e0b;
+      --glow: rgba(96, 165, 250, .4); --badge-ink: #0f1218;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1218; --panel: #171b24; --ink: #e7e9ef; --muted: #9aa3b5; --line: #2a3140;
+    --req: #60a5fa; --res: #4ade80; --boundary: #64748b;
+    --n-ext-fill: #1e2430; --n-ext-stroke: #94a3b8;
+    --n-app-fill: #142240; --n-app-stroke: #60a5fa;
+    --n-llm-fill: #231a3d; --n-llm-stroke: #a78bfa;
+    --n-db-fill:  #2d2210; --n-db-stroke:  #f59e0b;
+    --glow: rgba(96, 165, 250, .4); --badge-ink: #0f1218;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  }
+  main { max-width: 1080px; margin: 0 auto; padding: 24px 16px 40px; }
+  h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -.01em; }
+  .sub { color: var(--muted); margin: 0 0 18px; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+  button, select {
+    font: inherit; color: var(--ink); background: var(--panel);
+    border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; cursor: pointer;
+  }
+  button:hover, select:hover { border-color: var(--req); }
+  button:focus-visible, select:focus-visible { outline: 2px solid var(--req); outline-offset: 2px; }
+  #play { background: var(--req); color: var(--badge-ink); border-color: var(--req); font-weight: 600; min-width: 120px; }
+  .speed { display: flex; align-items: center; gap: 6px; color: var(--muted); margin-left: auto; }
+
+  .stage { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 8px; }
+  svg { display: block; width: 100%; height: auto; }
+
+  .node rect { stroke-width: 2; transition: filter .4s, stroke-width .4s; }
+  .node text { fill: var(--ink); font-size: 16px; font-weight: 600; text-anchor: middle; }
+  .node text.s { font-size: 12px; font-weight: 400; fill: var(--muted); }
+  .node.on rect { stroke-width: 3.5; filter: drop-shadow(0 0 10px var(--glow)); }
+  .ext rect { fill: var(--n-ext-fill); stroke: var(--n-ext-stroke); }
+  .app rect { fill: var(--n-app-fill); stroke: var(--n-app-stroke); }
+  .llm rect { fill: var(--n-llm-fill); stroke: var(--n-llm-stroke); }
+  .db  rect { fill: var(--n-db-fill);  stroke: var(--n-db-stroke); }
+
+  .boundary { fill: none; stroke: var(--boundary); stroke-dasharray: 6 5; stroke-width: 1.5; }
+  .boundary-label { fill: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+
+  .edge { transition: opacity .5s; opacity: .28; }
+  .edge.done, svg.idle .edge { opacity: .8; }
+  .edge.active { opacity: 1; }
+  .edge path.base { fill: none; stroke-width: 2; }
+  .edge.req path.base { stroke: var(--req); }
+  .edge.res path.base { stroke: var(--res); stroke-dasharray: 7 5; }
+  .edge path.fill { fill: none; stroke-width: 5; stroke-linecap: round; opacity: .55; }
+  .edge.req path.fill { stroke: var(--req); }
+  .edge.res path.fill { stroke: var(--res); }
+  .edge text.lbl { font-size: 12.5px; fill: var(--ink); }
+  .badge circle { stroke: none; }
+  .req .badge circle { fill: var(--req); }
+  .res .badge circle { fill: var(--res); }
+  .badge text { fill: var(--badge-ink); font-size: 12px; font-weight: 700; text-anchor: middle; }
+
+  #packet { transition: opacity .3s; }
+  #packet circle.core { stroke: var(--panel); stroke-width: 2.5; }
+  #packet rect { fill: var(--panel); stroke-width: 1.5; }
+  #packet text { font-size: 12px; font-weight: 600; text-anchor: middle; }
+
+  .legend text { fill: var(--muted); font-size: 12.5px; }
+
+  .caption {
+    margin-top: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    padding: 14px 18px; min-height: 84px;
+  }
+  .caption .k { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  .caption .t { font-size: 18px; font-weight: 650; margin: 2px 0; }
+  .caption .d { color: var(--muted); margin: 0; }
+
+  ol.steps { list-style: none; padding: 0; margin: 14px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+  ol.steps li button {
+    width: 100%; text-align: left; display: flex; gap: 10px; align-items: center; padding: 10px 12px;
+  }
+  ol.steps .n { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; color: var(--badge-ink); }
+  ol.steps .req .n { background: var(--req); }
+  ol.steps .res .n { background: var(--res); }
+  ol.steps li.cur button { border-color: var(--req); box-shadow: 0 0 0 2px var(--glow); }
+  ol.steps li.done button { opacity: .7; }
+</style>
+</head>
+<body>
+<main>
+  <h1>User asks AI assistant: data flow, start to end</h1>
+  <p class="sub">Press <b>Play</b> to watch one question travel through the system, one hop at a time.</p>
+
+  <div class="controls" role="toolbar" aria-label="Playback">
+    <button id="play" aria-label="Play">▶ Play</button>
+    <button id="step" title="Play the next hop only">⏭ Next step</button>
+    <button id="restart">↺ Restart</button>
+    <label class="speed">Speed
+      <select id="speed">
+        <option value="verySlow">Very slow</option>
+        <option value="slow" selected>Slow</option>
+        <option value="normal">Normal</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="stage">
+    <svg viewBox="0 0 980 540" role="img" aria-labelledby="svgTitle">
+      <title id="svgTitle">User sends question to AI Assistant app, which loads history from Conversation DB, calls Azure OpenAI, saves the turn, and returns the answer.</title>
+      <defs>
+        <marker id="m-req" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--req)"/>
+        </marker>
+        <marker id="m-res" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--res)"/>
+        </marker>
+        <filter id="halo" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="5"/>
+        </filter>
+      </defs>
+
+      <!-- Trust boundary: what we own -->
+      <rect class="boundary" x="318" y="40" width="364" height="440" rx="14"/>
+      <text class="boundary-label" x="334" y="60">Our system</text>
+
+      <!-- Edges (drawn before nodes so arrowheads sit on node borders) -->
+      <g id="e1" class="edge req">
+        <path class="base" d="M190 100 L368 100" marker-end="url(#m-req)"/>
+        <path class="fill" d="M190 100 L368 100"/>
+        <g class="badge"><circle cx="212" cy="100" r="11"/><text x="212" y="104">1</text></g>
+        <text class="lbl" x="268" y="90" text-anchor="middle">question</text>
+      </g>
+      <g id="e7" class="edge res">
+        <path class="base" d="M370 130 L192 130" marker-end="url(#m-res)"/>
+        <path class="fill" d="M370 130 L192 130"/>
+        <g class="badge"><circle cx="348" cy="130" r="11"/><text x="348" y="134">7</text></g>
+        <text class="lbl" x="270" y="150" text-anchor="middle">answer</text>
+      </g>
+      <g id="e4" class="edge req">
+        <path class="base" d="M630 100 L798 100" marker-end="url(#m-req)"/>
+        <path class="fill" d="M630 100 L798 100"/>
+        <g class="badge"><circle cx="652" cy="100" r="11"/><text x="652" y="104">4</text></g>
+        <text class="lbl" x="744" y="90" text-anchor="middle">prompt + history</text>
+      </g>
+      <g id="e5" class="edge res">
+        <path class="base" d="M800 130 L632 130" marker-end="url(#m-res)"/>
+        <path class="fill" d="M800 130 L632 130"/>
+        <g class="badge"><circle cx="778" cy="130" r="11"/><text x="778" y="134">5</text></g>
+        <text class="lbl" x="740" y="150" text-anchor="middle">completion</text>
+      </g>
+      <g id="e2" class="edge req">
+        <path class="base" d="M420 160 L420 358" marker-end="url(#m-req)"/>
+        <path class="fill" d="M420 160 L420 358"/>
+        <g class="badge"><circle cx="420" cy="230" r="11"/><text x="420" y="234">2</text></g>
+        <text class="lbl" x="406" y="276" text-anchor="end">load history</text>
+      </g>
+      <g id="e3" class="edge res">
+        <path class="base" d="M500 360 L500 162" marker-end="url(#m-res)"/>
+        <path class="fill" d="M500 360 L500 162"/>
+        <g class="badge"><circle cx="500" cy="290" r="11"/><text x="500" y="294">3</text></g>
+        <text class="lbl" x="514" y="294">history</text>
+      </g>
+      <g id="e6" class="edge req">
+        <path class="base" d="M580 160 L580 358" marker-end="url(#m-req)"/>
+        <path class="fill" d="M580 160 L580 358"/>
+        <g class="badge"><circle cx="580" cy="230" r="11"/><text x="580" y="234">6</text></g>
+        <text class="lbl" x="594" y="234">save turn</text>
+      </g>
+
+      <!-- Nodes -->
+      <g id="n-user" class="node ext">
+        <rect x="40" y="70" width="150" height="90" rx="12"/>
+        <text x="115" y="111">User</text>
+        <text class="s" x="115" y="131">browser / mobile</text>
+      </g>
+      <g id="n-app" class="node app">
+        <rect x="370" y="70" width="260" height="90" rx="12"/>
+        <text x="500" y="108">AI Assistant</text>
+        <text class="s" x="500" y="128">web app + API · holds API key</text>
+      </g>
+      <g id="n-llm" class="node llm">
+        <rect x="800" y="70" width="150" height="90" rx="12"/>
+        <text x="875" y="111">Azure OpenAI</text>
+        <text class="s" x="875" y="131">LLM service</text>
+      </g>
+      <g id="n-db" class="node db">
+        <rect x="370" y="360" width="260" height="90" rx="12"/>
+        <text x="500" y="400">Conversation DB</text>
+        <text class="s" x="500" y="420">chat history</text>
+      </g>
+
+      <!-- Legend -->
+      <g class="legend" transform="translate(40 500)">
+        <line x1="0" y1="0" x2="34" y2="0" stroke="var(--req)" stroke-width="2" marker-end="url(#m-req)"/>
+        <text x="44" y="4">request</text>
+        <line x1="120" y1="0" x2="154" y2="0" stroke="var(--res)" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#m-res)"/>
+        <text x="164" y="4">response</text>
+        <rect x="250" y="-8" width="30" height="16" rx="4" fill="none" stroke="var(--boundary)" stroke-dasharray="6 5"/>
+        <text x="290" y="4">our system boundary</text>
+      </g>
+
+      <!-- Moving data packet -->
+      <g id="packet" opacity="0">
+        <circle class="halo" r="14" filter="url(#halo)"/>
+        <circle class="core" r="8"/>
+        <rect x="-60" y="-38" width="120" height="22" rx="11"/>
+        <text y="-23"></text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="caption" aria-live="polite">
+    <div class="k" id="capK">Ready</div>
+    <div class="t" id="capT">Press Play to start</div>
+    <p class="d" id="capD">7 hops: question in, history loaded, LLM called, turn saved, answer out.</p>
+  </div>
+
+  <ol class="steps" id="steps"></ol>
+</main>
+
+<script>
+(function () {
+  const STEPS = [
+    { e: 'e1', kind: 'req', from: 'user', to: 'app', payload: 'question',
+      t: 'User sends a question', d: 'The question goes to our AI Assistant app. Users never call the LLM directly.' },
+    { e: 'e2', kind: 'req', from: 'app', to: 'db', payload: 'history query',
+      t: 'App loads chat history', d: 'The app asks the Conversation DB for earlier turns of this conversation.' },
+    { e: 'e3', kind: 'res', from: 'db', to: 'app', payload: 'past messages',
+      t: 'DB returns history', d: 'Earlier messages come back so the model gets the conversation context.' },
+    { e: 'e4', kind: 'req', from: 'app', to: 'llm', payload: 'prompt + history',
+      t: 'App calls Azure OpenAI', d: 'The app builds the prompt (question + history) and sends it over HTTPS using its API key.' },
+    { e: 'e5', kind: 'res', from: 'llm', to: 'app', payload: 'completion',
+      t: 'LLM returns a completion', d: 'Azure OpenAI generates the answer text and sends it back to the app.' },
+    { e: 'e6', kind: 'req', from: 'app', to: 'db', payload: 'new turn',
+      t: 'App saves the turn', d: 'The question and answer are stored, so the next question has context.' },
+    { e: 'e7', kind: 'res', from: 'app', to: 'user', payload: 'answer',
+      t: 'User receives the answer', d: 'The answer is shown to the user. End of the flow.' }
+  ];
+  const SPEEDS = {
+    verySlow: { travel: 5000, dwell: 2200 },
+    slow:     { travel: 3200, dwell: 1500 },
+    normal:   { travel: 1600, dwell: 700 }
+  };
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const $ = (id) => document.getElementById(id);
+  const playBtn = $('play'), stepBtn = $('step'), restartBtn = $('restart'), speedSel = $('speed');
+  const packet = $('packet'), pText = packet.querySelector('text'), pRect = packet.querySelector('rect');
+  const pCore = packet.querySelector('.core'), pHalo = packet.querySelector('.halo');
+  const capK = $('capK'), capT = $('capT'), capD = $('capD'), list = $('steps');
+
+  // Prepare the "fill" overlay paths so they can be drawn progressively.
+  const edges = {};
+  STEPS.forEach((s) => {
+    const g = $(s.e), fill = g.querySelector('path.fill'), base = g.querySelector('path.base');
+    const len = fill.getTotalLength();
+    fill.style.strokeDasharray = len;
+    fill.style.strokeDashoffset = len;
+    edges[s.e] = { g, fill, base, len };
+  });
+
+  // Clickable step list.
+  STEPS.forEach((s, i) => {
+    const li = document.createElement('li');
+    li.className = s.kind;
+    li.innerHTML = '<button type="button"><span class="n">' + (i + 1) + '</span><span>' + s.t + '</span></button>';
+    li.querySelector('button').addEventListener('click', () => { pause(); goTo(i, true); });
+    list.appendChild(li);
+  });
+
+  try { const saved = localStorage.getItem('dataflow-speed'); if (saved && SPEEDS[saved]) speedSel.value = saved; } catch (e) {}
+  speedSel.addEventListener('change', () => { try { localStorage.setItem('dataflow-speed', speedSel.value); } catch (e) {} });
+
+  const st = { i: -1, phase: 'idle', elapsed: 0, playing: false, single: false, last: 0 };
+  const timing = () => reduceMotion ? { travel: 1, dwell: SPEEDS[speedSel.value].dwell } : SPEEDS[speedSel.value];
+  const ease = (p) => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+
+  function render() {
+    STEPS.forEach((s, k) => {
+      const ed = edges[s.e];
+      ed.g.classList.toggle('active', k === st.i);
+      ed.g.classList.toggle('done', k < st.i || (st.phase === 'finished'));
+      if (k < st.i || st.phase === 'finished') ed.fill.style.strokeDashoffset = 0;
+      else if (k > st.i) ed.fill.style.strokeDashoffset = ed.len;
+      const li = list.children[k];
+      li.classList.toggle('cur', k === st.i && st.phase !== 'finished');
+      li.classList.toggle('done', k < st.i || st.phase === 'finished');
+    });
+    ['user', 'app', 'llm', 'db'].forEach((n) => {
+      const s = STEPS[st.i];
+      const on = s && st.phase !== 'finished' && (n === s.from || n === s.to);
+      $('n-' + n).classList.toggle('on', !!on);
+    });
+    document.querySelector('svg').classList.toggle('idle', st.phase === 'idle');
+    playBtn.textContent = st.playing ? '❚❚ Pause' : (st.phase === 'finished' ? '▶ Replay' : '▶ Play');
+    playBtn.setAttribute('aria-label', st.playing ? 'Pause' : 'Play');
+  }
+
+  function setCaption() {
+    if (st.phase === 'finished') {
+      capK.textContent = 'Done';
+      capT.textContent = 'Flow complete: 7 hops';
+      capD.textContent = 'Press Replay to watch again, or click any step below to jump to it.';
+      return;
+    }
+    const s = STEPS[st.i];
+    capK.textContent = 'Step ' + (st.i + 1) + ' of 7 · ' + (s.kind === 'req' ? 'request' : 'response');
+    capT.textContent = s.t;
+    capD.textContent = s.d;
+  }
+
+  function placePacket(p) {
+    const s = STEPS[st.i], ed = edges[s.e];
+    const pt = ed.base.getPointAtLength(ed.len * p);
+    packet.setAttribute('transform', 'translate(' + pt.x + ' ' + pt.y + ')');
+    ed.fill.style.strokeDashoffset = ed.len * (1 - p);
+  }
+
+  function goTo(i, showComplete) {
+    st.i = i; st.phase = showComplete ? 'dwell' : 'travel'; st.elapsed = 0;
+    const s = STEPS[i], color = s.kind === 'req' ? 'var(--req)' : 'var(--res)';
+    pCore.style.fill = color; pHalo.style.fill = color;
+    pRect.style.stroke = color; pText.style.fill = color;
+    pText.textContent = s.payload;
+    const w = Math.max(70, s.payload.length * 7.4 + 22);
+    pRect.setAttribute('x', -w / 2); pRect.setAttribute('width', w);
+    packet.setAttribute('opacity', 1);
+    placePacket(showComplete ? 1 : 0);
+    setCaption(); render();
+  }
+
+  function finish() {
+    st.phase = 'finished'; st.playing = false;
+    packet.setAttribute('opacity', 0);
+    setCaption(); render();
+  }
+
+  function play() {
+    if (st.phase === 'idle' || st.phase === 'finished') goTo(0, false);
+    st.playing = true; st.single = false; render();
+  }
+  function pause() { st.playing = false; render(); }
+
+  function nextStep() {
+    pause();
+    if (st.phase === 'idle' || st.phase === 'finished') goTo(0, false);
+    else if (st.phase === 'travel') { /* finish current hop first */ }
+    else if (st.i < STEPS.length - 1) goTo(st.i + 1, false);
+    else { finish(); return; }
+    st.playing = true; st.single = true; render();
+  }
+
+  function tick(ts) {
+    const dt = st.last ? Math.min(ts - st.last, 100) : 0;
+    st.last = ts;
+    if (st.playing) {
+      st.elapsed += dt;
+      const tm = timing();
+      if (st.phase === 'travel') {
+        const p = Math.min(st.elapsed / tm.travel, 1);
+        placePacket(ease(p));
+        if (p >= 1) {
+          st.phase = 'dwell'; st.elapsed = 0;
+          if (st.single) { st.playing = false; render(); }
+        }
+      } else if (st.phase === 'dwell' && st.elapsed >= tm.dwell) {
+        if (st.i < STEPS.length - 1) goTo(st.i + 1, false);
+        else finish();
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  playBtn.addEventListener('click', () => st.playing ? pause() : play());
+  stepBtn.addEventListener('click', nextStep);
+  restartBtn.addEventListener('click', () => { goTo(0, false); st.playing = true; st.single = false; render(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && !(e.target instanceof HTMLButtonElement) && !(e.target instanceof HTMLSelectElement)) {
+      e.preventDefault(); st.playing ? pause() : play();
+    }
+  });
+
+  render();
+  if (new URLSearchParams(location.search).has('autoplay')) play();
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

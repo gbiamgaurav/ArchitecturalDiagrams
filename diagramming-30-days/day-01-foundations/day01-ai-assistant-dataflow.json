@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "User asks AI assistant — data flow, start to end",
+    "locale": "en",
+    "output": "diagramming-30-days/day-01-foundations/day01-ai-assistant-dataflow.html",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "v-ask",
+        "label": "1 · User asks",
+        "focus": [
+          "user",
+          "app"
+        ],
+        "note": "The question enters the system through the web app — never straight to the LLM."
+      },
+      {
+        "id": "v-history",
+        "label": "2–3 · Load history",
+        "focus": [
+          "app",
+          "db"
+        ],
+        "note": "App fetches earlier turns so the model has conversation context."
+      },
+      {
+        "id": "v-llm",
+        "label": "4–5 · Call the LLM",
+        "focus": [
+          "app",
+          "llm"
+        ],
+        "note": "App sends prompt + history over HTTPS; Azure OpenAI returns a completion."
+      },
+      {
+        "id": "v-save",
+        "label": "6 · Save the turn",
+        "focus": [
+          "app",
+          "db"
+        ],
+        "note": "Question and answer are stored for the next turn."
+      },
+      {
+        "id": "v-answer",
+        "label": "7 · Answer returned",
+        "focus": [
+          "app",
+          "user"
+        ],
+        "note": "The answer travels back to the user — end of the flow."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "User",
+      "sublabel": "browser / mobile",
+      "icon": "person",
+      "pos": [
+        40,
+        44
+      ],
+      "size": [
+        120,
+        64
+      ]
+    },
+    {
+      "id": "app",
+      "type": "backend",
+      "label": "AI Assistant",
+      "sublabel": "web app + API",
+      "tag": "holds API key",
+      "pos": [
+        280,
+        40
+      ],
+      "size": [
+        220,
+        72
+      ]
+    },
+    {
+      "id": "llm",
+      "type": "cloud",
+      "label": "Azure OpenAI",
+      "sublabel": "LLM service",
+      "pos": [
+        720,
+        40
+      ],
+      "size": [
+        170,
+        72
+      ]
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "Conversation DB",
+      "sublabel": "chat history",
+      "pos": [
+        280,
+        300
+      ],
+      "size": [
+        220,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Our system",
+      "wraps": [
+        "app",
+        "db"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1-question",
+      "from": "user",
+      "to": "app",
+      "label": "1 · question",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c2-load",
+      "from": "app",
+      "to": "db",
+      "label": "2 · load history",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c3-history",
+      "from": "db",
+      "to": "app",
+      "label": "3 · history"
+    },
+    {
+      "id": "c4-prompt",
+      "from": "app",
+      "to": "llm",
+      "label": "4 · prompt + history (HTTPS)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c5-completion",
+      "from": "llm",
+      "to": "app",
+      "label": "5 · completion"
+    },
+    {
+      "id": "c6-save",
+      "from": "app",
+      "to": "db",
+      "label": "6 · save turn",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c7-answer",
+      "from": "app",
+      "to": "user",
+      "label": "7 · answer"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "How to read",
+      "items": [
+        "Follow numbers 1 → 7 for time order",
+        "Highlighted arrows = requests",
+        "Plain arrows = responses"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Our system owns",
+      "items": [
+        "API key to Azure OpenAI",
+        "Conversation history",
+        "What gets sent to the model"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Deliberately out of scope",
+      "items": [
+        "Auth / login",
+        "RAG retrieval and tools",
+        "Streaming, retries, monitoring"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,195 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -40 980 580" width="980" height="580" role="img" aria-labelledby="svgTitle">
+      <title id="svgTitle">User sends question to AI Assistant app, which loads history from Conversation DB, calls Azure OpenAI, saves the turn, and returns the answer.</title>
+      <style>svg {
+    --bg: #f6f7fb;
+    --panel: #ffffff;
+    --ink: #1b1f2a;
+    --muted: #5f6677;
+    --line: #d9dde7;
+    --req: #2563eb;
+    --res: #15803d;
+    --boundary: #94a3b8;
+    --n-ext-fill: #f1f5f9;   --n-ext-stroke: #64748b;
+    --n-app-fill: #e8f0ff;   --n-app-stroke: #2563eb;
+    --n-llm-fill: #f3ecff;   --n-llm-stroke: #7c3aed;
+    --n-db-fill:  #fff5e6;   --n-db-stroke:  #d97706;
+    --glow: rgba(37, 99, 235, .35);
+    --badge-ink: #ffffff;
+  }
+
+
+  .node rect { stroke-width: 2; transition: filter .4s, stroke-width .4s; }
+
+
+  .node text { fill: var(--ink); font-size: 16px; font-weight: 600; text-anchor: middle; }
+
+
+  .node text.s { font-size: 12px; font-weight: 400; fill: var(--muted); }
+
+
+  .node.on rect { stroke-width: 3.5; filter: drop-shadow(0 0 10px var(--glow)); }
+
+
+  .ext rect { fill: var(--n-ext-fill); stroke: var(--n-ext-stroke); }
+
+
+  .app rect { fill: var(--n-app-fill); stroke: var(--n-app-stroke); }
+
+
+  .llm rect { fill: var(--n-llm-fill); stroke: var(--n-llm-stroke); }
+
+
+  .db  rect { fill: var(--n-db-fill);  stroke: var(--n-db-stroke); }
+
+
+
+  .boundary { fill: none; stroke: var(--boundary); stroke-dasharray: 6 5; stroke-width: 1.5; }
+
+
+  .boundary-label { fill: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+
+
+
+  .edge { transition: opacity .5s; opacity: .28; }
+
+
+  .edge.done, svg.idle .edge { opacity: .8; }
+
+
+  .edge.active { opacity: 1; }
+
+
+  .edge path.base { fill: none; stroke-width: 2; }
+
+
+  .edge.req path.base { stroke: var(--req); }
+
+
+  .edge.res path.base { stroke: var(--res); stroke-dasharray: 7 5; }
+
+
+  .edge path.fill { fill: none; stroke-width: 5; stroke-linecap: round; opacity: .55; }
+
+
+  .edge.req path.fill { stroke: var(--req); }
+
+
+  .edge.res path.fill { stroke: var(--res); }
+
+
+  .edge text.lbl { font-size: 12.5px; fill: var(--ink); }
+
+
+  .badge circle { stroke: none; }
+
+
+  .req .badge circle { fill: var(--req); }
+
+
+  .res .badge circle { fill: var(--res); }
+
+
+  .badge text { fill: var(--badge-ink); font-size: 12px; font-weight: 700; text-anchor: middle; }
+
+
+
+  .legend text { fill: var(--muted); font-size: 12.5px; }
+.edge, .edge.done { opacity: 1; }
+.edge path.fill { display: none; }
+.node text { font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+.edge text, .badge text, .legend text, .boundary-label { font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+</style>
+<rect y="-40" width="980" height="580" fill="#ffffff"/>
+<text x="40" y="4" style="font: 700 20px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #1b1f2a">User asks AI assistant: data flow, start to end</text>
+<defs>
+        <marker id="m-req" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--req)"/>
+        </marker>
+        <marker id="m-res" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--res)"/>
+        </marker>
+        <filter id="halo" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="5"/>
+        </filter>
+      </defs>
+
+      
+      <rect class="boundary" x="318" y="40" width="364" height="440" rx="14"/>
+      <text class="boundary-label" x="334" y="60">Our system</text>
+
+      
+      <g id="e1" class="edge req">
+        <path class="base" d="M190 100 L368 100" marker-end="url(#m-req)"/>
+        <path class="fill" d="M190 100 L368 100"/>
+        <g class="badge"><circle cx="212" cy="100" r="11"/><text x="212" y="104">1</text></g>
+        <text class="lbl" x="268" y="90" text-anchor="middle">question</text>
+      </g>
+      <g id="e7" class="edge res">
+        <path class="base" d="M370 130 L192 130" marker-end="url(#m-res)"/>
+        <path class="fill" d="M370 130 L192 130"/>
+        <g class="badge"><circle cx="348" cy="130" r="11"/><text x="348" y="134">7</text></g>
+        <text class="lbl" x="270" y="150" text-anchor="middle">answer</text>
+      </g>
+      <g id="e4" class="edge req">
+        <path class="base" d="M630 100 L798 100" marker-end="url(#m-req)"/>
+        <path class="fill" d="M630 100 L798 100"/>
+        <g class="badge"><circle cx="652" cy="100" r="11"/><text x="652" y="104">4</text></g>
+        <text class="lbl" x="744" y="90" text-anchor="middle">prompt + history</text>
+      </g>
+      <g id="e5" class="edge res">
+        <path class="base" d="M800 130 L632 130" marker-end="url(#m-res)"/>
+        <path class="fill" d="M800 130 L632 130"/>
+        <g class="badge"><circle cx="778" cy="130" r="11"/><text x="778" y="134">5</text></g>
+        <text class="lbl" x="740" y="150" text-anchor="middle">completion</text>
+      </g>
+      <g id="e2" class="edge req">
+        <path class="base" d="M420 160 L420 358" marker-end="url(#m-req)"/>
+        <path class="fill" d="M420 160 L420 358"/>
+        <g class="badge"><circle cx="420" cy="230" r="11"/><text x="420" y="234">2</text></g>
+        <text class="lbl" x="406" y="276" text-anchor="end">load history</text>
+      </g>
+      <g id="e3" class="edge res">
+        <path class="base" d="M500 360 L500 162" marker-end="url(#m-res)"/>
+        <path class="fill" d="M500 360 L500 162"/>
+        <g class="badge"><circle cx="500" cy="290" r="11"/><text x="500" y="294">3</text></g>
+        <text class="lbl" x="514" y="294">history</text>
+      </g>
+      <g id="e6" class="edge req">
+        <path class="base" d="M580 160 L580 358" marker-end="url(#m-req)"/>
+        <path class="fill" d="M580 160 L580 358"/>
+        <g class="badge"><circle cx="580" cy="230" r="11"/><text x="580" y="234">6</text></g>
+        <text class="lbl" x="594" y="234">save turn</text>
+      </g>
+
+      
+      <g id="n-user" class="node ext">
+        <rect x="40" y="70" width="150" height="90" rx="12"/>
+        <text x="115" y="111">User</text>
+        <text class="s" x="115" y="131">browser / mobile</text>
+      </g>
+      <g id="n-app" class="node app">
+        <rect x="370" y="70" width="260" height="90" rx="12"/>
+        <text x="500" y="108">AI Assistant</text>
+        <text class="s" x="500" y="128">web app + API · holds API key</text>
+      </g>
+      <g id="n-llm" class="node llm">
+        <rect x="800" y="70" width="150" height="90" rx="12"/>
+        <text x="875" y="111">Azure OpenAI</text>
+        <text class="s" x="875" y="131">LLM service</text>
+      </g>
+      <g id="n-db" class="node db">
+        <rect x="370" y="360" width="260" height="90" rx="12"/>
+        <text x="500" y="400">Conversation DB</text>
+        <text class="s" x="500" y="420">chat history</text>
+      </g>
+
+      
+      <g class="legend" transform="translate(40 500)">
+        <line x1="0" y1="0" x2="34" y2="0" stroke="var(--req)" stroke-width="2" marker-end="url(#m-req)"/>
+        <text x="44" y="4">request</text>
+        <line x1="120" y1="0" x2="154" y2="0" stroke="var(--res)" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#m-res)"/>
+        <text x="164" y="4">response</text>
+        <rect x="250" y="-8" width="30" height="16" rx="4" fill="none" stroke="var(--boundary)" stroke-dasharray="6 5"/>
+        <text x="290" y="4">our system boundary</text>
+      </g>
+</svg>

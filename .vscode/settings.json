@@ -1,2 +1,6 @@
 {
+    "workbench.editorAssociations": {
+        "*.md": "vscode.markdown.preview.editor"
+    },
+    "markdown-preview-enhanced.hideDefaultVSCodeMarkdownPreviewButtons": false
 }

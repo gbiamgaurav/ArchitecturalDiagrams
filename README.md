@@ -18,8 +18,8 @@ Milestone: redraw the MCP sequence diagram from memory. **Done on Day 07.**
 | [06](diagramming-30-days/day-06-sequence-control-flow/README.md) | Sequence control flow | MCP sequence v2 with `loop`, `alt` and `ref` boxes for errors, timeouts and the tool limit | [sequence v2](diagramming-30-days/day-06-sequence-control-flow/day06-mcp-sequence-v2.drawio.svg) |
 | [07](diagramming-30-days/day-07-week1-review/README.md) | Week 1 review | MCP sequence v3 redrawn from memory, with 5 improvements over v1 | [sequence v3](diagramming-30-days/day-07-week1-review/day07-mcp-sequence-v3.drawio.svg) |
 
-### Week 2: Diagram types
-Milestone: a three-diagram mini design pack.
+### Week 2: Diagram types ✅
+Milestone: a three-diagram mini design pack. **Done on Day 14.**
 
 | Day | Topic | What we achieved | Diagrams |
 |---|---|---|---|
@@ -29,6 +29,7 @@ Milestone: a three-diagram mini design pack.
 | [11](diagramming-30-days/day-11-class-diagrams/README.md) | Class diagrams | Agent / Tool / ToolCall / ToolResult / Message classes with 4 relationship types and multiplicity, built around one design question | [class diagram](diagramming-30-days/day-11-class-diagrams/day11-agent-tool-classes.drawio.svg) |
 | [12](diagramming-30-days/day-12-er-diagrams/README.md) | ER diagrams | Conversation storage ERD: 5 tables with PK / FK / UQ keys and crow's-foot cardinality | [ERD](diagramming-30-days/day-12-er-diagrams/day12-conversation-erd.drawio.svg) |
 | [13](diagramming-30-days/day-13-state-diagrams/README.md) | State diagrams | Agent task lifecycle with `event [guard] / action` labels, a composite "Active" state, a self-loop and 3 end states | [state diagram](diagramming-30-days/day-13-state-diagrams/day13-agent-task-states.drawio.svg) |
+| [14](diagramming-30-days/day-14-week2-review/README.md) | Week 2 review | Mini design pack: one 4-page `.drawio` file where the sequence, flowchart and state diagrams each answer their own question | [source](diagramming-30-days/day-14-week2-review/day14-design-pack.drawio) · [overview](diagramming-30-days/day-14-week2-review/day14-1-overview.png) · [sequence](diagramming-30-days/day-14-week2-review/day14-2-sequence.png) · [flowchart](diagramming-30-days/day-14-week2-review/day14-3-flowchart.png) · [state](diagramming-30-days/day-14-week2-review/day14-4-state.png) |
 
 ### Week 3: Visual design
 Milestone: a polished Agentic AI architecture. *Not started.*

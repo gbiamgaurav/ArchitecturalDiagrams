@@ -19,7 +19,11 @@ Milestone: redraw the MCP sequence diagram from memory. **Done on Day 07.**
 | [07](diagramming-30-days/day-07-week1-review/README.md) | Week 1 review | MCP sequence v3 redrawn from memory, with 5 improvements over v1 | [sequence v3](diagramming-30-days/day-07-week1-review/day07-mcp-sequence-v3.drawio.svg) |
 
 ### Week 2: Diagram types
-Milestone: a three-diagram mini design pack. *Not started.*
+Milestone: a three-diagram mini design pack.
+
+| Day | Topic | What we achieved | Diagrams |
+|---|---|---|---|
+| [08](diagramming-30-days/day-08-drawio-workflow/README.md) | Draw.io workflow | One `.drawio` file with 2 pages (flowchart + sequence), 3 layers, tooltips, page links and PNG exports | [source](diagramming-30-days/day-08-drawio-workflow/day08-chatbot-pack.drawio) · [flowchart](diagramming-30-days/day-08-drawio-workflow/day08-flowchart.png) · [sequence](diagramming-30-days/day-08-drawio-workflow/day08-sequence.png) |
 
 ### Week 3: Visual design
 Milestone: a polished Agentic AI architecture. *Not started.*

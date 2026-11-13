@@ -24,6 +24,7 @@ Milestone: a three-diagram mini design pack.
 | Day | Topic | What we achieved | Diagrams |
 |---|---|---|---|
 | [08](diagramming-30-days/day-08-drawio-workflow/README.md) | Draw.io workflow | One `.drawio` file with 2 pages (flowchart + sequence), 3 layers, tooltips, page links and PNG exports | [source](diagramming-30-days/day-08-drawio-workflow/day08-chatbot-pack.drawio) · [flowchart](diagramming-30-days/day-08-drawio-workflow/day08-flowchart.png) · [sequence](diagramming-30-days/day-08-drawio-workflow/day08-sequence.png) |
+| [09](diagramming-30-days/day-09-sequence-patterns/README.md) | Sequence patterns | Production-style LLM tool-call sequence (7 participants), with intent kept apart from execution | [sequence](diagramming-30-days/day-09-sequence-patterns/day09-llm-tool-call-sequence.drawio.svg) |
 
 ### Week 3: Visual design
 Milestone: a polished Agentic AI architecture. *Not started.*

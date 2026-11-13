@@ -38,6 +38,7 @@ Milestone: a polished Agentic AI architecture.
 |---|---|---|---|
 | [15](diagramming-30-days/day-15-canvas-setup/README.md) | Canvas setup | MCP layout skeleton: 1600×900 page, 10 px grid, 5 evenly spaced lifelines in 4 zones, 5 layers, notes rail and legend strip | [source](diagramming-30-days/day-15-canvas-setup/day15-mcp-skeleton.drawio) · [skeleton](diagramming-30-days/day-15-canvas-setup/day15-skeleton.png) · [with guides](diagramming-30-days/day-15-canvas-setup/day15-skeleton-guides.png) |
 | [16](diagramming-30-days/day-16-shapes-connectors/README.md) | Shapes & connectors | Full 15-message MCP sequence on the Day 15 skeleton, with one arrow style per message kind and every message labelled | [source](diagramming-30-days/day-16-shapes-connectors/day16-mcp-sequence.drawio) · [sequence](diagramming-30-days/day-16-shapes-connectors/day16-mcp-sequence.png) · [with guides](diagramming-30-days/day-16-shapes-connectors/day16-mcp-sequence-guides.png) |
+| [17](diagramming-30-days/day-17-layout-alignment/README.md) | Layout & alignment | Polished MCP v1: 7 layout fixes (36 px rhythm, equal boxes, borderless zones, notes on their rows, aligned edges) | [source](diagramming-30-days/day-17-layout-alignment/day17-mcp-sequence-v1.drawio) · [v1](diagramming-30-days/day-17-layout-alignment/day17-mcp-sequence-v1.png) · [with guides](diagramming-30-days/day-17-layout-alignment/day17-mcp-sequence-v1-guides.png) |
 
 ### Week 4: Real-world architecture
 Milestone: an enterprise knowledge assistant pack. *Not started.*

@@ -32,7 +32,11 @@ Milestone: a three-diagram mini design pack. **Done on Day 14.**
 | [14](diagramming-30-days/day-14-week2-review/README.md) | Week 2 review | Mini design pack: one 4-page `.drawio` file where the sequence, flowchart and state diagrams each answer their own question | [source](diagramming-30-days/day-14-week2-review/day14-design-pack.drawio) · [overview](diagramming-30-days/day-14-week2-review/day14-1-overview.png) · [sequence](diagramming-30-days/day-14-week2-review/day14-2-sequence.png) · [flowchart](diagramming-30-days/day-14-week2-review/day14-3-flowchart.png) · [state](diagramming-30-days/day-14-week2-review/day14-4-state.png) |
 
 ### Week 3: Visual design
-Milestone: a polished Agentic AI architecture. *Not started.*
+Milestone: a polished Agentic AI architecture.
+
+| Day | Topic | What we achieved | Diagrams |
+|---|---|---|---|
+| [15](diagramming-30-days/day-15-canvas-setup/README.md) | Canvas setup | MCP layout skeleton: 1600×900 page, 10 px grid, 5 evenly spaced lifelines in 4 zones, 5 layers, notes rail and legend strip | [source](diagramming-30-days/day-15-canvas-setup/day15-mcp-skeleton.drawio) · [skeleton](diagramming-30-days/day-15-canvas-setup/day15-skeleton.png) · [with guides](diagramming-30-days/day-15-canvas-setup/day15-skeleton-guides.png) |
 
 ### Week 4: Real-world architecture
 Milestone: an enterprise knowledge assistant pack. *Not started.*

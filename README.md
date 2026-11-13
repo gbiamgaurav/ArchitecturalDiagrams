@@ -28,6 +28,7 @@ Milestone: a three-diagram mini design pack.
 | [10](diagramming-30-days/day-10-flowchart-patterns/README.md) | Flowchart patterns | Left-to-right RAG request flowchart in 4 stages, with a no-results fallback and offline ingestion kept separate | [flowchart](diagramming-30-days/day-10-flowchart-patterns/day10-rag-request-flowchart.drawio.svg) |
 | [11](diagramming-30-days/day-11-class-diagrams/README.md) | Class diagrams | Agent / Tool / ToolCall / ToolResult / Message classes with 4 relationship types and multiplicity, built around one design question | [class diagram](diagramming-30-days/day-11-class-diagrams/day11-agent-tool-classes.drawio.svg) |
 | [12](diagramming-30-days/day-12-er-diagrams/README.md) | ER diagrams | Conversation storage ERD: 5 tables with PK / FK / UQ keys and crow's-foot cardinality | [ERD](diagramming-30-days/day-12-er-diagrams/day12-conversation-erd.drawio.svg) |
+| [13](diagramming-30-days/day-13-state-diagrams/README.md) | State diagrams | Agent task lifecycle with `event [guard] / action` labels, a composite "Active" state, a self-loop and 3 end states | [state diagram](diagramming-30-days/day-13-state-diagrams/day13-agent-task-states.drawio.svg) |
 
 ### Week 3: Visual design
 Milestone: a polished Agentic AI architecture. *Not started.*
